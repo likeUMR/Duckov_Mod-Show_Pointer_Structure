@@ -36,6 +36,9 @@ namespace HideTheEquipment
         private const string HELMAT_SOCKET_PATH = "Head/HelmatSocket";
         private const string HEAD_COLLIDER_NAME = "HeadCollider(Clone)";
         
+        // 持久化键名
+        private const string PREF_KEY_STATE_INDEX = "HideTheEquipment_StateIndex";
+        
         // 当前状态（0=关闭, 1=全部启用, 2=启用1/2/3组, 3=启用1/2组, 4=启用1组）
         private int currentState = 0;
         
@@ -71,6 +74,8 @@ namespace HideTheEquipment
             if (currentState == 0)
             {
                 Debug.Log("[GameObjectChildrenActivator] 状态：关闭");
+                // 保存状态到持久化（即使是关闭状态也要保存）
+                SaveCurrentState();
                 return;
             }
             
@@ -83,6 +88,63 @@ namespace HideTheEquipment
             
             string stateName = GetStateName(currentState);
             Debug.Log($"[GameObjectChildrenActivator] 状态：{stateName}，已记录原始状态");
+            
+            // 保存状态到持久化
+            SaveCurrentState();
+        }
+        
+        /// <summary>
+        /// 获取当前状态索引
+        /// </summary>
+        public int GetCurrentState()
+        {
+            return currentState;
+        }
+        
+        /// <summary>
+        /// 设置状态索引（用于从持久化恢复）
+        /// </summary>
+        public void SetCurrentState(int state)
+        {
+            // 确保状态在有效范围内
+            if (state < 0 || state > 4)
+            {
+                state = 0;
+            }
+            
+            currentState = state;
+            
+            if (state > 0)
+            {
+                UpdateListsForState(state);
+                RecordOriginalStates();
+                isEnabled = true;
+            }
+            else
+            {
+                isEnabled = false;
+            }
+        }
+        
+        /// <summary>
+        /// 保存当前状态到持久化
+        /// </summary>
+        public void SaveCurrentState()
+        {
+            PlayerPrefs.SetInt(PREF_KEY_STATE_INDEX, currentState);
+            PlayerPrefs.Save(); // 立即保存到磁盘
+            Debug.Log($"[GameObjectChildrenActivator] 已保存状态索引: {currentState}");
+        }
+        
+        /// <summary>
+        /// 从持久化读取状态索引
+        /// </summary>
+        public int LoadSavedState()
+        {
+            // 如果不存在，返回1（默认全部启用）
+            int savedState = PlayerPrefs.GetInt(PREF_KEY_STATE_INDEX, 1);
+            Debug.Log($"[GameObjectChildrenActivator] 从持久化读取状态索引: {savedState}");
+            return savedState;
         }
         
         /// <summary>

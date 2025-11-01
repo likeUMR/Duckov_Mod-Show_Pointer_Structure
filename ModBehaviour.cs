@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace HideTheEquipment
 {
@@ -13,6 +14,12 @@ namespace HideTheEquipment
         private GameObjectChildrenActivator? childrenActivator;
         
         private bool isEnabled = false;
+        
+        // 是否已经触发过默认状态推进
+        private bool hasTriggeredDefaultState = false;
+        
+        // 保存的状态索引（在OnEnable时读取，在首次进入场景时应用）
+        private int savedStateIndex = 0;
 
         // === OnEnable：启用时创建所有组件 ===
         void OnEnable()
@@ -23,7 +30,10 @@ namespace HideTheEquipment
             sceneExporter = new SceneHierarchyExporter();
             childrenActivator = new GameObjectChildrenActivator();
             
-            Debug.Log("[ModBehaviour] OnEnable: All components created.");
+            // 读取保存的状态索引（但不立即应用，等进入场景后再应用）
+            savedStateIndex = childrenActivator.LoadSavedState();
+            
+            Debug.Log($"[ModBehaviour] OnEnable: 已读取保存的状态索引: {savedStateIndex}");
         }
 
         // === OnDisable：禁用时清理所有组件 ===
@@ -47,6 +57,26 @@ namespace HideTheEquipment
             if (!isEnabled)
             {
                 return;
+            }
+
+            // 检测是否第一次进入 Base_SceneV2 场景
+            if (!hasTriggeredDefaultState)
+            {
+                if (SceneManager.GetActiveScene().name == "Base_SceneV2")
+                {
+                    // 如果保存的状态不是0，需要Toggle到目标状态
+                    // 因为当前状态是0（关闭），需要Toggle savedStateIndex次才能到达目标状态
+                    if (savedStateIndex > 0)
+                    {
+                        for (int i = 0; i < savedStateIndex; i++)
+                        {
+                            childrenActivator?.ToggleEnabled();
+                        }
+                    }
+                    
+                    hasTriggeredDefaultState = true;
+                    Debug.Log($"[ModBehaviour] 首次进入 Base_SceneV2 场景，已恢复到状态索引: {savedStateIndex}");
+                }
             }
 
             // 检查是否按下数字键9，切换子物体激活状态管理
