@@ -35,39 +35,110 @@ namespace HideTheEquipment
         // 特殊处理的路径常量
         private const string HELMAT_SOCKET_PATH = "Head/HelmatSocket";
         private const string HEAD_COLLIDER_NAME = "HeadCollider(Clone)";
+        
+        // 当前状态（0=关闭, 1=全部启用, 2=启用1/2/3组, 3=启用1/2组, 4=启用1组）
+        private int currentState = 0;
+        
+        // 各组定义
+        private readonly List<string> group1Active = new List<string> { "Head/HairSocket" };
+        private readonly List<string> group1Inactive = new List<string> { "Head/HelmatSocket" };
+        private readonly List<string> group2Active = new List<string> { "Head/MouthSocket" };
+        private readonly List<string> group2Inactive = new List<string> { "Head/FaceMaskSocket" };
+        private readonly List<string> group3Inactive = new List<string> { "ArmorSocket" };
+        private readonly List<string> group4Inactive = new List<string> { "BackpackSocket" };
 
         public GameObjectChildrenActivator()
         {
-            // 初始化列表
-            // activeList: 需要设置为active的路径列表
-            activeList.Add("Head/HairSocket");
-            activeList.Add("Head/MouthSocket");
-            
-            // inactiveList: 需要设置为not active的路径列表
-            inactiveList.Add("Head/HelmatSocket");
-            inactiveList.Add("Head/FaceMaskSocket");
-            inactiveList.Add("ArmorSocket");
-            inactiveList.Add("BackpackSocket");
+            // 列表在切换状态时会动态更新，这里不需要初始化
         }
 
         /// <summary>
-        /// 切换启用状态
+        /// 切换启用状态（循环切换：关闭 -> 全部启用 -> 启用1/2/3组 -> 启用1/2组 -> 启用1组 -> 关闭）
         /// </summary>
         public void ToggleEnabled()
         {
-            if (!isEnabled)
+            // 如果当前已启用，先关闭（恢复原始状态）
+            if (isEnabled)
             {
-                // 开启：先记录所有目标物体的激活状态
-                RecordOriginalStates();
-                isEnabled = true;
-                Debug.Log("[GameObjectChildrenActivator] 功能已开启，已记录原始状态");
-            }
-            else
-            {
-                // 关闭：先停止每帧修改，然后恢复原始状态
                 isEnabled = false;
                 RestoreOriginalStates();
-                Debug.Log("[GameObjectChildrenActivator] 功能已关闭，已恢复原始状态");
+            }
+            
+            // 循环到下一个状态
+            currentState = (currentState + 1) % 5;
+            
+            // 状态0表示关闭，直接返回
+            if (currentState == 0)
+            {
+                Debug.Log("[GameObjectChildrenActivator] 状态：关闭");
+                return;
+            }
+            
+            // 根据新状态更新列表
+            UpdateListsForState(currentState);
+            
+            // 开启新状态
+            RecordOriginalStates();
+            isEnabled = true;
+            
+            string stateName = GetStateName(currentState);
+            Debug.Log($"[GameObjectChildrenActivator] 状态：{stateName}，已记录原始状态");
+        }
+        
+        /// <summary>
+        /// 根据状态更新列表
+        /// </summary>
+        private void UpdateListsForState(int state)
+        {
+            activeList.Clear();
+            inactiveList.Clear();
+            
+            switch (state)
+            {
+                case 1: // 全部启用（1/2/3/4组）
+                    activeList.AddRange(group1Active);
+                    activeList.AddRange(group2Active);
+                    inactiveList.AddRange(group1Inactive);
+                    inactiveList.AddRange(group2Inactive);
+                    inactiveList.AddRange(group3Inactive);
+                    inactiveList.AddRange(group4Inactive);
+                    break;
+                    
+                case 2: // 启用1/2/3组
+                    activeList.AddRange(group1Active);
+                    activeList.AddRange(group2Active);
+                    inactiveList.AddRange(group1Inactive);
+                    inactiveList.AddRange(group2Inactive);
+                    inactiveList.AddRange(group3Inactive);
+                    break;
+                    
+                case 3: // 启用1/2组
+                    activeList.AddRange(group1Active);
+                    activeList.AddRange(group2Active);
+                    inactiveList.AddRange(group1Inactive);
+                    inactiveList.AddRange(group2Inactive);
+                    break;
+                    
+                case 4: // 启用1组
+                    activeList.AddRange(group1Active);
+                    inactiveList.AddRange(group1Inactive);
+                    break;
+            }
+        }
+        
+        /// <summary>
+        /// 获取状态名称
+        /// </summary>
+        private string GetStateName(int state)
+        {
+            switch (state)
+            {
+                case 0: return "关闭";
+                case 1: return "全部启用（1/2/3/4组）";
+                case 2: return "启用1/2/3组";
+                case 3: return "启用1/2组";
+                case 4: return "启用1组";
+                default: return "未知状态";
             }
         }
 
@@ -383,6 +454,9 @@ namespace HideTheEquipment
                 return;
             }
 
+            // 保存当前的inactiveList，因为后面可能会被修改
+            bool shouldRestoreHelmatSocket = inactiveList.Contains(HELMAT_SOCKET_PATH);
+
             int restoredCount = 0;
 
             // 恢复所有记录的状态
@@ -402,8 +476,8 @@ namespace HideTheEquipment
                 }
             }
 
-            // 特殊处理：如果 inactiveList 中包含 Head/HelmatSocket，开启其所有一级子节点
-            if (inactiveList.Contains(HELMAT_SOCKET_PATH))
+            // 特殊处理：如果之前的 inactiveList 中包含 Head/HelmatSocket，开启其所有一级子节点
+            if (shouldRestoreHelmatSocket)
             {
                 RestoreHelmatSocketChildren();
             }
@@ -458,6 +532,10 @@ namespace HideTheEquipment
             cachedObjects.Clear();
             originalStates.Clear();
             hasRecordedStates = false;
+            currentState = 0;
+            isEnabled = false;
+            activeList.Clear();
+            inactiveList.Clear();
         }
     }
 }
