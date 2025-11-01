@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HideTheEquipment")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04b3ffa49180cca2c50a0f262d405f571ad4cb81")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a0246f59bfb4ef5e48bb603347490fffce0575c")]
 [assembly: System.Reflection.AssemblyProductAttribute("HideTheEquipment")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HideTheEquipment")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

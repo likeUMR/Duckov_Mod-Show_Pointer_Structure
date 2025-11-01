@@ -49,8 +49,8 @@ namespace HideTheEquipment
                 return;
             }
 
-            // 检查是否按下数字键7，切换子物体激活状态管理
-            if (Input.GetKeyDown(KeyCode.Alpha7))
+            // 检查是否按下数字键9，切换子物体激活状态管理
+            if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 childrenActivator?.ToggleEnabled();
             }
@@ -62,10 +62,10 @@ namespace HideTheEquipment
             }
 
             // 检查是否按下数字键8，导出场景层级结构
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                ExportSceneHierarchy();
-            }
+            // if (Input.GetKeyDown(KeyCode.Alpha8))
+            // {
+            //     ExportSceneHierarchy();
+            // }
         }
 
         /// <summary>
