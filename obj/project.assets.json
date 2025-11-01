@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\GetGameObjectStructure\\GetGameObjectStructure.csproj",
-      "projectName": "GetGameObjectStructure",
-      "projectPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\GetGameObjectStructure\\GetGameObjectStructure.csproj",
+      "projectUniqueName": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj",
+      "projectName": "HideTheEquipment",
+      "projectPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj",
       "packagesPath": "C:\\Users\\windows11\\.nuget\\packages\\",
-      "outputPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\GetGameObjectStructure\\obj\\",
+      "outputPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\windows11\\AppData\\Roaming\\NuGet\\NuGet.Config"

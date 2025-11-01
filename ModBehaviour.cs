@@ -1,31 +1,27 @@
 ﻿using UnityEngine;
+using System.IO;
+using System;
 
-namespace GetGameObjectStructure
+namespace HideTheEquipment
 {
     /// <summary>
     /// 主Mod行为类，负责协调各个功能模块
     /// </summary>
     public class ModBehaviour : Duckov.Modding.ModBehaviour
     {
-        private UIManager? uiManager;
-        private RaycastManager? raycastManager;
-        private HierarchyInspector? hierarchyInspector;
+        private SceneHierarchyExporter? sceneExporter;
+        private GameObjectChildrenActivator? childrenActivator;
         
         private bool isEnabled = false;
-        private int parentLevelOffset = 0; // 父级指标偏移量（鼠标滚轮控制）
 
         // === OnEnable：启用时创建所有组件 ===
         void OnEnable()
         {
             isEnabled = true;
             
-            // 初始化各个功能模块
-            uiManager = new UIManager(transform);
-            uiManager.CreateUICanvas();
-            uiManager.CreateInfoText();
-            
-            raycastManager = new RaycastManager();
-            hierarchyInspector = new HierarchyInspector();
+            // 初始化功能模块
+            sceneExporter = new SceneHierarchyExporter();
+            childrenActivator = new GameObjectChildrenActivator();
             
             Debug.Log("[ModBehaviour] OnEnable: All components created.");
         }
@@ -36,17 +32,15 @@ namespace GetGameObjectStructure
             isEnabled = false;
             
             // 清理各个功能模块
-            uiManager?.Cleanup();
-            raycastManager?.Cleanup();
+            childrenActivator?.Cleanup();
             
-            uiManager = null;
-            raycastManager = null;
-            hierarchyInspector = null;
+            sceneExporter = null;
+            childrenActivator = null;
             
             Debug.Log("[ModBehaviour] OnDisable: All components cleaned up.");
         }
 
-        // === 游戏循环：每帧检测射线 ===
+        // === 游戏循环 ===
         void Update()
         {
             // 如果未启用，不执行任何逻辑
@@ -55,121 +49,44 @@ namespace GetGameObjectStructure
                 return;
             }
 
-            // 检测鼠标滚轮输入来控制父级指标
-            HandleScrollWheelInput();
-
-            // 每帧检测鼠标位置下的物体
-            PerformRaycast();
-
-            // 检查是否按下数字键9，切换射线检测模式
-            if (Input.GetKeyDown(KeyCode.Alpha9))
+            // 检查是否按下数字键7，切换子物体激活状态管理
+            if (Input.GetKeyDown(KeyCode.Alpha7))
             {
-                raycastManager?.ToggleMode();
+                childrenActivator?.ToggleEnabled();
             }
 
-            // 检查是否按下上键或下键，切换物体索引
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            // 管理指定GameObject的激活状态（如果已启用）
+            if (childrenActivator != null && childrenActivator.IsEnabled())
             {
-                raycastManager?.IncrementIndex();
+                childrenActivator.Update();
             }
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
+
+            // 检查是否按下数字键8，导出场景层级结构
+            if (Input.GetKeyDown(KeyCode.Alpha8))
             {
-                raycastManager?.DecrementIndex();
+                ExportSceneHierarchy();
             }
         }
 
         /// <summary>
-        /// 处理鼠标滚轮输入，控制父级指标偏移
+        /// 导出场景层级结构到JSON文件
         /// </summary>
-        private void HandleScrollWheelInput()
+        private void ExportSceneHierarchy()
         {
-            float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
-            if (scrollDelta > 0f)
+            if (sceneExporter == null)
             {
-                // 向上滚动，父级指标+1
-                parentLevelOffset++;
-                Debug.Log($"Parent Level Offset: {parentLevelOffset}");
-            }
-            else if (scrollDelta < 0f)
-            {
-                // 向下滚动，父级指标-1，最少为0
-                parentLevelOffset = Mathf.Max(0, parentLevelOffset - 1);
-                Debug.Log($"Parent Level Offset: {parentLevelOffset}");
-            }
-        }
-
-        /// <summary>
-        /// 执行射线检测并更新显示
-        /// </summary>
-        private void PerformRaycast()
-        {
-            // 如果未启用或UI未创建，不执行检测
-            if (!isEnabled || uiManager == null || raycastManager == null || hierarchyInspector == null)
-            {
+                Debug.LogError("[ModBehaviour] SceneExporter is null!");
                 return;
             }
 
-            if (!uiManager.IsUIAvailable())
-            {
-                return;
-            }
+            // 生成文件名（使用时间戳）
+            string fileName = $"SceneHierarchy_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            // 获取桌面路径
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string filePath = Path.Combine(desktopPath, fileName);
 
-            // 执行射线检测
-            GameObject? hitObject = raycastManager.PerformRaycast();
-
-            // 根据父级指标向上迭代获取父级对象
-            if (hitObject != null && parentLevelOffset > 0)
-            {
-                hitObject = raycastManager.GetParentAtLevel(hitObject, parentLevelOffset);
-            }
-
-            UpdateDisplay(hitObject);
-        }
-
-        /// <summary>
-        /// 更新显示内容
-        /// </summary>
-        private void UpdateDisplay(GameObject? hitObject)
-        {
-            if (uiManager == null || raycastManager == null || hierarchyInspector == null)
-            {
-                return;
-            }
-
-            if (hitObject != null)
-            {
-                string hierarchyInfo = hierarchyInspector.GetHierarchyInfo(hitObject);
-                
-                // 添加模式信息
-                string modeInfo = raycastManager.GetCurrentMode() == RaycastMode.UIMode 
-                    ? "[UI Mode]" 
-                    : "[Scene Object Mode]";
-                
-                // 添加索引信息
-                int hitCount = raycastManager.GetHitCount();
-                int currentIndex = raycastManager.GetCurrentIndex();
-                string indexInfo = hitCount > 1 ? $" [{currentIndex + 1}/{hitCount}]" : "";
-                
-                // 如果有父级偏移，在信息中显示
-                if (parentLevelOffset > 0)
-                {
-                    hierarchyInfo = $"{modeInfo}{indexInfo} [Parent Level +{parentLevelOffset}]\n\n" + hierarchyInfo;
-                }
-                else
-                {
-                    hierarchyInfo = $"{modeInfo}{indexInfo}\n\n" + hierarchyInfo;
-                }
-                
-                uiManager.UpdateInfoText(hierarchyInfo);
-            }
-            else
-            {
-                // 显示当前模式和提示信息
-                string modeInfo = raycastManager.GetCurrentMode() == RaycastMode.UIMode 
-                    ? "[UI Mode]" 
-                    : "[Scene Object Mode]";
-                uiManager.UpdateInfoText($"{modeInfo}\n\nNo object detected");
-            }
+            sceneExporter.ExportSceneHierarchy(filePath);
+            Debug.Log($"[ModBehaviour] 场景层级结构已导出到: {filePath}");
         }
     }
 }

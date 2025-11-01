@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("GetGameObjectStructure")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("HideTheEquipment")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fd4607e2018e9b06c614910cd3107515e37c8ff")]
-[assembly: System.Reflection.AssemblyProductAttribute("GetGameObjectStructure")]
-[assembly: System.Reflection.AssemblyTitleAttribute("GetGameObjectStructure")]
+[assembly: System.Reflection.AssemblyProductAttribute("HideTheEquipment")]
+[assembly: System.Reflection.AssemblyTitleAttribute("HideTheEquipment")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // 由 MSBuild WriteCodeFragment 类生成。

@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\GetGameObjectStructure.csproj": {}
+    "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj": {}
   },
   "projects": {
-    "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\GetGameObjectStructure.csproj": {
+    "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\GetGameObjectStructure.csproj",
-        "projectName": "GetGameObjectStructure",
-        "projectPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\GetGameObjectStructure.csproj",
+        "projectUniqueName": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj",
+        "projectName": "HideTheEquipment",
+        "projectPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\HideTheEquipment.csproj",
         "packagesPath": "C:\\Users\\windows11\\.nuget\\packages\\",
         "outputPath": "D:\\PROJECT\\VSCode\\AI+Game\\Duckov_Mods\\HideTheEquipment\\obj\\",
         "projectStyle": "PackageReference",

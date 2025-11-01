@@ -1,5 +1,5 @@
 is_global = true
-build_property.RootNamespace = GetGameObjectStructure
+build_property.RootNamespace = HideTheEquipment
 build_property.ProjectDir = D:\PROJECT\VSCode\AI+Game\Duckov_Mods\HideTheEquipment\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
