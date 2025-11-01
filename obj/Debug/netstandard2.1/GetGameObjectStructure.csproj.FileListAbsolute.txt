@@ -153,3 +153,4 @@ D:\PROJECT\VSCode\AI+Game\Duckov_Mods\GetGameObjectStructure\bin\Debug\netstanda
 D:\PROJECT\VSCode\AI+Game\Duckov_Mods\GetGameObjectStructure\obj\Debug\netstandard2.1\GetGameO.2ABEB1A5.Up2Date
 D:\PROJECT\VSCode\AI+Game\Duckov_Mods\GetGameObjectStructure\obj\Debug\netstandard2.1\GetGameObjectStructure.dll
 D:\PROJECT\VSCode\AI+Game\Duckov_Mods\GetGameObjectStructure\obj\Debug\netstandard2.1\GetGameObjectStructure.pdb
+D:\PROJECT\VSCode\AI+Game\Duckov_Mods\GetGameObjectStructure\obj\Debug\netstandard2.1\GetGameObjectStructure.sourcelink.json

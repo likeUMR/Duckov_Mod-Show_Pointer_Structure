@@ -66,6 +66,16 @@ namespace GetGameObjectStructure
             {
                 raycastManager?.ToggleMode();
             }
+
+            // 检查是否按下上键或下键，切换物体索引
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                raycastManager?.IncrementIndex();
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                raycastManager?.DecrementIndex();
+            }
         }
 
         /// <summary>
@@ -113,24 +123,41 @@ namespace GetGameObjectStructure
                 hitObject = raycastManager.GetParentAtLevel(hitObject, parentLevelOffset);
             }
 
-            // 更新显示
+            UpdateDisplay(hitObject);
+        }
+
+        /// <summary>
+        /// 更新显示内容
+        /// </summary>
+        private void UpdateDisplay(GameObject? hitObject)
+        {
+            if (uiManager == null || raycastManager == null || hierarchyInspector == null)
+            {
+                return;
+            }
+
             if (hitObject != null)
             {
                 string hierarchyInfo = hierarchyInspector.GetHierarchyInfo(hitObject);
                 
                 // 添加模式信息
-                string modeInfo = raycastManager?.GetCurrentMode() == RaycastMode.UIMode 
+                string modeInfo = raycastManager.GetCurrentMode() == RaycastMode.UIMode 
                     ? "[UI Mode]" 
                     : "[Scene Object Mode]";
+                
+                // 添加索引信息
+                int hitCount = raycastManager.GetHitCount();
+                int currentIndex = raycastManager.GetCurrentIndex();
+                string indexInfo = hitCount > 1 ? $" [{currentIndex + 1}/{hitCount}]" : "";
                 
                 // 如果有父级偏移，在信息中显示
                 if (parentLevelOffset > 0)
                 {
-                    hierarchyInfo = $"{modeInfo} [Parent Level +{parentLevelOffset}]\n\n" + hierarchyInfo;
+                    hierarchyInfo = $"{modeInfo}{indexInfo} [Parent Level +{parentLevelOffset}]\n\n" + hierarchyInfo;
                 }
                 else
                 {
-                    hierarchyInfo = $"{modeInfo}\n\n" + hierarchyInfo;
+                    hierarchyInfo = $"{modeInfo}{indexInfo}\n\n" + hierarchyInfo;
                 }
                 
                 uiManager.UpdateInfoText(hierarchyInfo);
@@ -138,7 +165,7 @@ namespace GetGameObjectStructure
             else
             {
                 // 显示当前模式和提示信息
-                string modeInfo = raycastManager?.GetCurrentMode() == RaycastMode.UIMode 
+                string modeInfo = raycastManager.GetCurrentMode() == RaycastMode.UIMode 
                     ? "[UI Mode]" 
                     : "[Scene Object Mode]";
                 uiManager.UpdateInfoText($"{modeInfo}\n\nNo object detected");
